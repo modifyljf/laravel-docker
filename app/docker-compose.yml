@@ -1,0 +1,128 @@
+version: "3.9"
+services:
+  # PHP 8.0
+  php80:
+    build:
+      context: .
+      dockerfile: ./php/8.0/Dockerfile
+    image: modifyljf/php
+    container_name: php80
+    restart: unless-stopped
+    tty: true
+    working_dir: /var/www
+    user: "${UID:-33}:${GID:-33}"
+    volumes:
+      - v_data:/var/www
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - network_app
+
+  # PHP8.1
+  php81:
+    build:
+      context: .
+      dockerfile: ./php/8.0/Dockerfile
+    image: modifyljf/php
+    container_name: php80
+    restart: unless-stopped
+    tty: true
+    working_dir: /var/www
+    user: "${UID:-33}:${GID:-33}"
+    volumes:
+      - v_data:/var/www
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - network_app
+
+  #Nginx Service
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - v_data:/var/www
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - network_app
+
+  # Mysql
+  mysql:
+    image: "mysql/mysql-server:5.7"
+    container_name: mysql
+    ports:
+      - '${FORWARD_DB_PORT:-3306}:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: '${DB_DATABASE}'
+      MYSQL_USER: '${DB_USERNAME}'
+      MYSQL_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    volumes:
+      - v_mysql:/var/lib/mysql
+      - ./privileges.sh:/docker-entrypoint-initdb.d/privileges.sh
+    networks:
+      - network_app
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}" ]
+      retries: 3
+      timeout: 5s
+
+  # Redis
+  redis:
+    image: 'redis:alpine'
+    container_name: redis
+    restart: unless-stopped
+    tty: true
+    ports:
+      - '${FORWARD_REDIS_PORT:-6379}:6379'
+    volumes:
+      - v_redis:/data
+    networks:
+      - network_app
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      retries: 3
+      timeout: 5s
+
+  # Selenium
+  selenium:
+    image: 'selenium/standalone-chrome'
+    container_name: "selenium"
+    restart: unless-stopped
+    tty: true
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    volumes:
+      - /dev/shm:/dev/shm
+    networks:
+      - network_app
+
+  # Mailhog
+  mailhog:
+    image: 'mailhog/mailhog:latest'
+    container_name: mailhog
+    restart: unless-stopped
+    tty: true
+    ports:
+      - '${FORWARD_MAILHOG_PORT:-1025}:1025'
+      - '${FORWARD_MAILHOG_DASHBOARD_PORT:-8025}:8025'
+    networks:
+      - network_app
+networks:
+  network_app:
+    driver: bridge
+volumes:
+  v_data:
+    driver: local
+    name: v_data
+  v_mysql:
+    driver: local
+    name: v_mysql
+  v_redis:
+    driver: local
+    name: v_redis
