@@ -120,6 +120,7 @@ services:
 networks:
   network_app:
     driver: bridge
+    name: network_app
 volumes:
   v_data:
     driver: local
