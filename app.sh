@@ -3,9 +3,9 @@
 if [ "$1" == "stop" ]; then
   docker compose \
     -f ./app/docker-compose.yml \
+    -v \
     --env-file .env \
     --project-name app \
-    -v \
     down
 else
   docker compose \

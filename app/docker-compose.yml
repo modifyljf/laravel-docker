@@ -1,11 +1,13 @@
 version: "3.9"
 services:
-  # PHP 8.0
+  #PHP 8.0 Service
   php80:
     build:
-      context: .
-      dockerfile: ./php/8.0/Dockerfile
-    image: modifyljf/php
+      context: app
+      dockerfile: ./php/Dockerfile
+      args:
+        PHPVERSION: "8.0"
+    image: go3technology/php80
     container_name: php80
     restart: unless-stopped
     tty: true
@@ -15,15 +17,17 @@ services:
       - v_data:/var/www
       - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
     networks:
-      - network_app
+      - network_apps
 
-  # PHP8.1
+  #PHP 8.1 Service
   php81:
     build:
-      context: .
-      dockerfile: ./php/8.0/Dockerfile
-    image: modifyljf/php
-    container_name: php80
+      context: app
+      dockerfile: ./php/Dockerfile
+      args:
+        PHPVERSION: "8.1"
+    image: go3technology/php81
+    container_name: php81
     restart: unless-stopped
     tty: true
     working_dir: /var/www
@@ -32,7 +36,7 @@ services:
       - v_data:/var/www
       - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
     networks:
-      - network_app
+      - network_apps
 
   #Nginx Service
   nginx:
@@ -47,7 +51,7 @@ services:
       - v_data:/var/www
       - ./nginx/conf.d/:/etc/nginx/conf.d/
     networks:
-      - network_app
+      - network_apps
 
   # Mysql
   mysql:

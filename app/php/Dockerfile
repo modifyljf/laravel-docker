@@ -1,4 +1,6 @@
-FROM php:8.1-fpm
+ARG PHPVERSION
+
+FROM php:${PHPVERSION}-fpm
 
 # Set working directory
 WORKDIR /var/www
