@@ -17,7 +17,7 @@ services:
       - v_data:/var/www
       - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
     networks:
-      - network_apps
+      - network_app
 
   #PHP 8.1 Service
   php81:
@@ -36,7 +36,7 @@ services:
       - v_data:/var/www
       - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
     networks:
-      - network_apps
+      - network_app
 
   #Nginx Service
   nginx:
@@ -51,7 +51,7 @@ services:
       - v_data:/var/www
       - ./nginx/conf.d/:/etc/nginx/conf.d/
     networks:
-      - network_apps
+      - network_app
 
   # Mysql
   mysql:
