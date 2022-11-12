@@ -23,8 +23,8 @@ services:
   #PHP 8.0 Service
   php80:
     build:
-      context: app
-      dockerfile: ./php/Dockerfile
+      context: .
+      dockerfile: php/Dockerfile
       args:
         PHPVERSION: "8.0"
     image: laravel-docker/php80
@@ -42,8 +42,8 @@ services:
   #PHP 8.1 Service
   php81:
     build:
-      context: app
-      dockerfile: ./php/Dockerfile
+      context: .
+      dockerfile: php/Dockerfile
       args:
         PHPVERSION: "8.1"
     image: laravel-docker/php81
