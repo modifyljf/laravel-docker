@@ -1,5 +1,25 @@
 version: "3.9"
 services:
+  #Nginx Service
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - v_data:/var/www
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - network_app
+    depends_on:
+      - php80
+      - php81
+      - mysql
+      - redis
+
   #PHP 8.0 Service
   php80:
     build:
@@ -7,7 +27,7 @@ services:
       dockerfile: ./php/Dockerfile
       args:
         PHPVERSION: "8.0"
-    image: go3technology/php80
+    image: laravel-docker/php80
     container_name: php80
     restart: unless-stopped
     tty: true
@@ -26,7 +46,7 @@ services:
       dockerfile: ./php/Dockerfile
       args:
         PHPVERSION: "8.1"
-    image: go3technology/php81
+    image: laravel-docker/php81
     container_name: php81
     restart: unless-stopped
     tty: true
@@ -35,21 +55,6 @@ services:
     volumes:
       - v_data:/var/www
       - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
-    networks:
-      - network_app
-
-  #Nginx Service
-  nginx:
-    image: nginx:alpine
-    container_name: nginx
-    restart: unless-stopped
-    tty: true
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - v_data:/var/www
-      - ./nginx/conf.d/:/etc/nginx/conf.d/
     networks:
       - network_app
 
@@ -68,7 +73,7 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: 1
     volumes:
       - v_mysql:/var/lib/mysql
-      - ./privileges.sh:/docker-entrypoint-initdb.d/privileges.sh
+      - ./mysql/privileges.sh:/docker-entrypoint-initdb.d/privileges.sh
     networks:
       - network_app
     healthcheck:
@@ -93,18 +98,18 @@ services:
       retries: 3
       timeout: 5s
 
-  # Selenium
-  selenium:
-    image: 'selenium/standalone-chrome'
-    container_name: "selenium"
-    restart: unless-stopped
-    tty: true
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
-    volumes:
-      - /dev/shm:/dev/shm
-    networks:
-      - network_app
+  #  # Selenium
+  #  selenium:
+  #    image: 'selenium/standalone-chrome'
+  #    container_name: "selenium"
+  #    restart: unless-stopped
+  #    tty: true
+  #    extra_hosts:
+  #      - 'host.docker.internal:host-gateway'
+  #    volumes:
+  #      - /dev/shm:/dev/shm
+  #    networks:
+  #      - network_app
 
   # Mailhog
   mailhog:
