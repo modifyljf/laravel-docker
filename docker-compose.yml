@@ -12,6 +12,8 @@ services:
     volumes:
       - v_data:/var/www
       - ./nginx/conf.d/:/etc/nginx/conf.d/
+      - ./nginx/ssl/certs/nginx-selfsigned.crt:/etc/nginx/ssl/certs/nginx-selfsigned.crt
+      - ./nginx/ssl/private/nginx-selfsigned.key:/etc/nginx/ssl/private/nginx-selfsigned.key
     networks:
       - network_app
     depends_on:
