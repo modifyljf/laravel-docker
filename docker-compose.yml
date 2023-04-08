@@ -73,6 +73,8 @@ services:
       MYSQL_USER: '${DB_USERNAME}'
       MYSQL_PASSWORD: '${DB_PASSWORD}'
       MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    env_file:
+      - .env
     volumes:
       - v_mysql:/var/lib/mysql
       - ./mysql/privileges.sh:/docker-entrypoint-initdb.d/privileges.sh
