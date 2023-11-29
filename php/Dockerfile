@@ -5,35 +5,41 @@ FROM php:${PHPVERSION}-fpm
 # Set working directory
 WORKDIR /var/www
 
-# Install dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    libzip-dev \
-    libpng-dev \
-    libjpeg62-turbo-dev \
-    libfreetype6-dev \
-    locales \
-    zip \
-    jpegoptim optipng pngquant gifsicle \
-    vim \
-    unzip \
-    git \
-    curl \
-    libmagickwand-dev \
-    ghostscript
+RUN apt-get update && apt-get upgrade -y
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install extensions
-RUN docker-php-ext-install pdo_mysql zip exif pcntl
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg
-RUN docker-php-ext-install gd
-RUN pecl install imagick && docker-php-ext-enable imagick
-RUN pecl install redis && docker-php-ext-enable redis
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+RUN install-php-extensions  \
+    bcmath \
+    curl \
+    pgsql \
+    pcov \
+    gd \
+    imagick \
+    imap \
+    mbstring \
+    xml \
+    zip \
+    soap \
+    intl \
+    ldap \
+    msgpack \
+    igbinary \
+    memcached \
+    swoole \
+    tidy \
+    readline \
+    xdebug \
+    pdo_mysql \
+    exif \
+    pcntl \
+    redis
 
 # Install composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN install-php-extensions @composer
 
 # Configure php.ini configure
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
