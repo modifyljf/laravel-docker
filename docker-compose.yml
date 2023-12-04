@@ -10,11 +10,20 @@ services:
       - "80:80"
       - "443:443"
     volumes:
+      # Volume mapping (See the bottom for the volume definition)
       - v_data:/var/www
+      # Nginx Configs mapping
       - ./nginx/conf.d/:/etc/nginx/conf.d/
+      # Nginx SSL config
       - ./nginx/ssl/certs/nginx-selfsigned.crt:/etc/nginx/ssl/certs/nginx-selfsigned.crt
       - ./nginx/ssl/private/nginx-selfsigned.key:/etc/nginx/ssl/private/nginx-selfsigned.key
+      #### You could only change the blew content. ###
+      # Projects mapping in Nginx
+      - ~/Projects/AppSpace/myapp-apis:/var/www/myapp-apis
+      - ~/Projects/AppSpace/myapp-admin:/var/www/myapp-admin
+      - ~/Projects/AppSpace/myapp:/var/www/myapp
     networks:
+      # See the bottom for the network definition)
       - network_app
     depends_on:
       - php80
@@ -22,14 +31,16 @@ services:
       - mysql
       - redis
 
-  #PHP 8.0 Service
+  # PHP 8.0 Service (If you have projects are still using php80) You could edit the volume/project mapping only.
   php80:
     build:
       context: .
       dockerfile: php/Dockerfile
       args:
         PHPVERSION: "8.0"
+    # If you want to create different image name, you could edit it.
     image: laravel-docker/php80
+    # If you want to create different container name, you could edit it.
     container_name: php80
     restart: unless-stopped
     tty: true
@@ -38,17 +49,20 @@ services:
     volumes:
       - v_data:/var/www
       - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+      # Project Mapping, edit below
     networks:
       - network_app
 
-  #PHP 8.1 Service
+  # PHP 8.1 Service (If you have projects are still using php80) You could edit the volume/project mapping only.
   php81:
     build:
       context: .
       dockerfile: php/Dockerfile
       args:
         PHPVERSION: "8.1"
+    # If you want to create different image name, you could edit it.
     image: laravel-docker/php81
+    # If you want to create different container name, you could edit it.
     container_name: php81
     restart: unless-stopped
     tty: true
@@ -57,10 +71,16 @@ services:
     volumes:
       - v_data:/var/www
       - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+      # Project Mapping
+      - ~/Projects/AppSpace/myapp-apis:/var/www/myapp-apis
+      - ~/Projects/AppSpace/myapp:/var/www/myapp
+      - ~/Projects/AppSpace/myapp-admin:/var/www/myapp-admin
     networks:
       - network_app
 
-  # Mysql
+  # Mysql (I am using AWS RDS, so I keep the mysql as 5.6.)
+  # You don't need to edit the config.
+  # You could edit the .env file to config the mysql environment only.
   mysql:
     image: "mysql/mysql-server:5.7"
     container_name: mysql
@@ -77,6 +97,7 @@ services:
       - .env
     volumes:
       - v_mysql:/var/lib/mysql
+      # The privileges config for mysql permission
       - ./mysql/privileges.sh:/docker-entrypoint-initdb.d/privileges.sh
     networks:
       - network_app
@@ -85,7 +106,7 @@ services:
       retries: 3
       timeout: 5s
 
-  # Redis
+  # Redis (You don't need to edit the config.)
   redis:
     image: 'redis:alpine'
     container_name: redis
@@ -102,7 +123,7 @@ services:
       retries: 3
       timeout: 5s
 
-  #  # Selenium
+  #  # Selenium (I am using cypress, so I comment it.)
   #  selenium:
   #    image: 'selenium/standalone-chrome'
   #    container_name: "selenium"
@@ -115,7 +136,8 @@ services:
   #    networks:
   #      - network_app
 
-  # Mailhog
+  # Mailhog (You don't need to edit the config, and  )
+  # I still recommend to use APIs base mail server like "MailGun" or "MailTrap" rather than the machine.
   mailhog:
     image: 'mailhog/mailhog:latest'
     container_name: mailhog
@@ -126,10 +148,13 @@ services:
       - '${FORWARD_MAILHOG_DASHBOARD_PORT:-8025}:8025'
     networks:
       - network_app
+
+# Networks config, keep all services in same network
 networks:
   network_app:
     driver: bridge
     name: network_app
+# Volumes config
 volumes:
   v_data:
     driver: local
