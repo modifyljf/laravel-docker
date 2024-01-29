@@ -78,6 +78,31 @@ services:
     networks:
       - network_app
 
+  # PHP 8.2 Service (If you have projects are still using php80) You could edit the volume/project mapping only.
+  php82:
+    build:
+      context: .
+      dockerfile: php/Dockerfile
+      args:
+        PHPVERSION: "8.2"
+    # If you want to create different image name, you could edit it.
+    image: laravel-docker/php82
+    # If you want to create different container name, you could edit it.
+    container_name: php82
+    restart: unless-stopped
+    tty: true
+    working_dir: /var/www
+    user: "${UID:-33}:${GID:-33}"
+    volumes:
+      - v_data:/var/www
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+      # Project Mapping, edit below
+      - ~/Projects/AppSpace/myapp-apis:/var/www/myapp-apis
+      - ~/Projects/AppSpace/myapp:/var/www/myapp
+      - ~/Projects/AppSpace/myapp-admin:/var/www/myapp-admin
+    networks:
+      - network_app
+
   # Mysql (I am using AWS RDS, so I keep the mysql as 5.6.)
   # You don't need to edit the config.
   # You could edit the .env file to config the mysql environment only.
