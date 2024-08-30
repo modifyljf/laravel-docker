@@ -103,11 +103,11 @@ services:
     networks:
       - network_app
 
-  # Mysql (I am using AWS RDS, so I keep the mysql as 5.6.)
+  # Mysql8.0
   # You don't need to edit the config.
   # You could edit the .env file to config the mysql environment only.
   mysql:
-    image: "mysql/mysql-server:5.7"
+    image: "mysql/mysql-server:8.0"
     container_name: mysql
     ports:
       - '${FORWARD_DB_PORT:-3306}:3306'
