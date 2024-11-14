@@ -49,6 +49,9 @@ services:
       - v_data:/var/www
       - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
       # Project Mapping, edit below
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     networks:
       - network_app
 
@@ -74,6 +77,9 @@ services:
       - ~/Projects/AppSpace/myapp-apis:/var/www/myapp-apis
       - ~/Projects/AppSpace/myapp:/var/www/myapp
       - ~/Projects/AppSpace/myapp-admin:/var/www/myapp-admin
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     networks:
       - network_app
 
@@ -99,6 +105,9 @@ services:
       - ~/Projects/AppSpace/myapp-apis:/var/www/myapp-apis
       - ~/Projects/AppSpace/myapp:/var/www/myapp
       - ~/Projects/AppSpace/myapp-admin:/var/www/myapp-admin
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     networks:
       - network_app
 
