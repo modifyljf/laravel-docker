@@ -13,3 +13,13 @@ stop: ## Build the development docker image.
   -v \
   --project-name app \
   down
+
+build: ## Build the development docker image.
+	docker compose \
+  -f docker-compose.yml \
+  -v \
+  --project-name app \
+  up \
+  --build\
+  -d
+
