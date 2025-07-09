@@ -1,4 +1,4 @@
-ARG PHPVERSION
+ARG PHPVERSION=8.4
 
 FROM php:${PHPVERSION}-fpm
 
@@ -12,6 +12,8 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install extensions
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+RUN install-php-extensions sockets
+
 RUN install-php-extensions  \
     bcmath \
     curl \
